@@ -1,67 +1,174 @@
-# Smart Medicine Reminder App
+# Smart Medicine Reminder
 
-A full-stack MERN application for managing medicine reminders, complete with authentication, medicine tracking, scheduling, and a responsive dashboard.
+A full-stack MERN medicine reminder app for tracking prescriptions, reminders, and daily medicine schedules. The app includes authentication, a responsive dashboard, medicine image uploads, reminder management, dark mode, and a production build that can be deployed directly to Render.
 
 ## Features
-- **User Authentication**: Register, Login, JWT-based auth with bcrypt password hashing.
-- **Dashboard**: Overview of total medicines, upcoming reminders, today's schedule, and adherence charts.
-- **Medicine Management**: Add, view, edit, and delete prescriptions. Includes support for medicine images, custom dosages, and multiple timings.
-- **Responsive Design**: Modern UI built with React, Tailwind CSS, and Lucide icons.
-- **Dark Mode**: Fully supports light and dark themes.
+
+- User registration and login with JWT authentication
+- Password hashing with bcrypt
+- Dashboard with medicine and reminder summaries
+- Add, view, update, and delete medicines
+- Create and manage medicine reminders
+- Medicine image uploads with Multer
+- Responsive React UI built with Tailwind CSS
+- Dark mode support
+- Single-service Render deployment
 
 ## Tech Stack
-- **Frontend**: React.js (Vite), Tailwind CSS, React Router, Recharts, Axios
-- **Backend**: Node.js, Express.js, MongoDB, Mongoose
-- **Authentication**: JSON Web Tokens (JWT)
-- **File Uploads**: Multer (Local storage for demo purposes)
 
-## Setup Instructions
+**Frontend**
+- React
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+- Recharts
+- Lucide React
 
-### 1. Backend Setup
+**Backend**
+- Node.js
+- Express
+- Mongoose
+- JSON Web Tokens
+- bcrypt
+- Multer
+- mongodb-memory-server
+
+## Project Structure
+
+```text
+.
+├── backend/          # Express API, models, routes, controllers
+├── frontend/         # React + Vite frontend
+├── package.json      # Root scripts for Render build/start
+└── render.yaml       # Render Blueprint config
+```
+
+## Local Development
+
+### Backend
+
 ```bash
 cd backend
 npm install
-```
-Create a `.env` file in the `backend` directory:
-```
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-```
-Start the backend server:
-```bash
-npm run dev # Uses nodemon
-# or
-node index.js
+npm run dev
 ```
 
-### 2. Frontend Setup
+By default, the backend starts an in-memory MongoDB instance if no external `MONGODB_URI` is provided.
+
+Optional backend `.env`:
+
+```env
+PORT=5000
+JWT_SECRET=hello
+USE_MEMORY_DB=true
+```
+
+Backend URL:
+
+```text
+http://localhost:5000
+```
+
+### Frontend
+
+Open a second terminal:
+
 ```bash
 cd frontend
 npm install
-```
-Start the frontend development server:
-```bash
 npm run dev
 ```
-The frontend will be available at `http://localhost:5173`.
 
-## Deployment
+Frontend URL:
 
-### Render
+```text
+http://localhost:5173
+```
 
-This repository includes a root `render.yaml` blueprint that deploys the backend and serves the built Vite frontend from the same Render web service.
+During local development, the frontend sends API requests to:
+
+```text
+http://localhost:5000/api
+```
+
+## Render Deployment
+
+This project is ready to deploy on Render using the root `render.yaml` Blueprint.
+
+### Steps
 
 1. Push the repository to GitHub.
-2. In Render, create a new Blueprint and select this repository.
-3. The Render blueprint includes these environment variables:
+2. Open Render.
+3. Click **New +**.
+4. Select **Blueprint**.
+5. Choose this GitHub repository.
+6. Render will detect `render.yaml`.
+7. Click **Apply** or **Deploy Blueprint**.
+8. Wait for the deploy to finish.
+9. Open the generated Render URL.
+
+The Blueprint uses:
+
+```yaml
+buildCommand: npm run render-build
+startCommand: NODE_ENV=production npm start
 ```
+
+The included environment variables are:
+
+```env
 USE_MEMORY_DB=true
 JWT_SECRET=hello
 ```
 
-Render will run `npm run render-build`, then start the app with `NODE_ENV=production npm start`.
+No MongoDB Atlas connection string is required for this deployment.
 
-This Render setup uses `mongodb-memory-server`, so you do not need MongoDB installed locally or a MongoDB Atlas connection string.
+## Important Data Note
 
-Note: in-memory data resets whenever the Render service restarts, redeploys, or sleeps and wakes up. Local image uploads through multer can also be lost after deploys or restarts. For persistent production data later, use MongoDB Atlas and object storage such as Cloudinary or S3.
+This app is currently configured to use in-memory MongoDB on Render. That makes deployment simple because no MongoDB setup is needed.
+
+However, in-memory data is temporary. Users, medicines, reminders, and uploaded files can be lost when:
+
+- Render restarts the service
+- You redeploy the app
+- The free Render service sleeps and wakes
+
+For real production use, switch to:
+
+- MongoDB Atlas for persistent database storage
+- Cloudinary, S3, or another object storage service for image uploads
+
+## Root Scripts
+
+```bash
+npm start
+npm run install-backend
+npm run install-frontend
+npm run build-frontend
+npm run render-build
+```
+
+`npm run render-build` installs backend dependencies, installs frontend dependencies, and builds the frontend.
+
+## API Routes
+
+```text
+POST   /api/auth/register
+POST   /api/auth/login
+GET    /api/auth/profile
+
+GET    /api/medicines
+POST   /api/medicines
+PUT    /api/medicines/:id
+DELETE /api/medicines/:id
+
+GET    /api/reminders
+POST   /api/reminders
+PUT    /api/reminders/:id
+DELETE /api/reminders/:id
+```
+
+## License
+
+This project is for learning, demos, and experimentation.
