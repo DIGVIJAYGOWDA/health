@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: smart-medicine-app
+    env: node
+    plan: free
+    buildCommand: npm run render-build
+    startCommand: NODE_ENV=production npm start
+    envVars:
+      - key: USE_MEMORY_DB
+        value: "true"
+      - key: JWT_SECRET
+        value: hello

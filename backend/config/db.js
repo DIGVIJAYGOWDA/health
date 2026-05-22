@@ -1,14 +1,20 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+
+let mongoServer;
 
 const connectDB = async () => {
   try {
     let uri = process.env.MONGODB_URI;
-    
-    // Use in-memory DB if no URI is provided, or if local DB is specified
-    if (!uri || uri.includes('localhost') || uri.includes('127.0.0.1')) {
-      console.log('Starting in-memory MongoDB server (since local MongoDB is not installed)...');
-      const mongoServer = await MongoMemoryServer.create();
+    const useMemoryDb = process.env.USE_MEMORY_DB === 'true';
+
+    const isLocalUri = uri && (uri.includes('localhost') || uri.includes('127.0.0.1'));
+
+    // Use in-memory MongoDB when explicitly requested, or for local development
+    // when no external MongoDB URI is configured.
+    if (useMemoryDb || !uri || isLocalUri) {
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      console.log('Starting in-memory MongoDB server...');
+      mongoServer = await MongoMemoryServer.create();
       uri = mongoServer.getUri();
     }
 

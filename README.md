@@ -48,8 +48,20 @@ The frontend will be available at `http://localhost:5173`.
 
 ## Deployment
 
-### Frontend (Vercel)
-The `frontend` directory includes a `vercel.json` file. You can deploy it directly to Vercel by importing the repository and setting the root directory to `frontend`. Ensure you configure environment variables for the API URL if needed.
+### Render
 
-### Backend (Render)
-The `backend` directory includes a `render.yaml` blueprint. Connect your repository to Render to automatically deploy the web service. Don't forget to configure the `MONGODB_URI` and `JWT_SECRET` environment variables in the Render dashboard. Note: Because Render uses an ephemeral file system, local image uploads (via multer) will reset upon deployment. For a true production build, migrate file storage to AWS S3 or Cloudinary.
+This repository includes a root `render.yaml` blueprint that deploys the backend and serves the built Vite frontend from the same Render web service.
+
+1. Push the repository to GitHub.
+2. In Render, create a new Blueprint and select this repository.
+3. The Render blueprint includes these environment variables:
+```
+USE_MEMORY_DB=true
+JWT_SECRET=hello
+```
+
+Render will run `npm run render-build`, then start the app with `NODE_ENV=production npm start`.
+
+This Render setup uses `mongodb-memory-server`, so you do not need MongoDB installed locally or a MongoDB Atlas connection string.
+
+Note: in-memory data resets whenever the Render service restarts, redeploys, or sleeps and wakes up. Local image uploads through multer can also be lost after deploys or restarts. For persistent production data later, use MongoDB Atlas and object storage such as Cloudinary or S3.
